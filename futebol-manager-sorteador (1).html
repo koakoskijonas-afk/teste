@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3b82f6">
+    <title>⚽ Futebol Manager v2.0</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #374151;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-tabs {
+            background: white;
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: max-content;
+            padding: 1rem;
+            text-align: center;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .content {
+            padding: 1.5rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            min-height: 44px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .member-card {
+            background: #fafafa;
+            border-radius: 0.8rem;
+            padding: 1.2rem;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .member-card.active {
+            border-left-color: #10b981;
+        }
+
+        .member-card.inactive {
+            border-left-color: #ef4444;
+            opacity: 0.7;
+        }
+
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .member-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .member-info p {
+            color: #6b7280;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .member-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .member-actions .btn {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.8rem;
+        }
+
+        .month-selector {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .month-btn {
+            padding: 0.6rem 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 0.8rem;
+        }
+
+        .month-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .payment-list {
+            display: grid;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            border: 2px solid #e5e7eb;
+        }
+
+        .payment-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            padding: 1.5rem;
+            border-radius: 0.8rem;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .summary-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .summary-income {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .summary-expense {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .summary-balance {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .expense-item {
+            background: #fafafa;
+            border-left: 4px solid #ef4444;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .report-textarea {
+            width: 100%;
+            height: 20rem;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: #fafafa;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .report-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-close:hover {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .report-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .member-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Futebol Manager</h1>
+            <p>Sistema de Controle Financeiro v2.0</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('members')">👥 Membros</button>
+            <button class="nav-tab" onclick="showTab('payments')">💰 Pagamentos</button>
+            <button class="nav-tab" onclick="showTab('financial')">📊 Financeiro</button>
+            <button class="nav-tab" onclick="showTab('whatsapp')">📱 WhatsApp</button>
+            <button class="nav-tab" onclick="showTab('sorteador')">🎲 Sorteador</button>
+            <button class="nav-tab" onclick="showTab('settings')">⚙️ Config</button>
+        </div>
+
+        <div class="content">
+            <div id="members" class="tab-content active">
+                <div class="card">
+                    <h2>➕ Adicionar Membro</h2>
+                    <input type="text" id="memberName" class="form-input" placeholder="Nome do jogador" style="margin-bottom: 1rem;">
+                    <input type="number" id="monthlyFee" class="form-input" step="0.01" placeholder="Mensalidade (R$)" style="margin-bottom: 1rem;">
+                    
+                    <div class="form-grid">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Mês de Inscrição:</label>
+                            <select id="startMonth" class="form-select"></select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Mês de Saída:</label>
+                            <select id="endMonth" class="form-select">
+                                <option value="">Ainda no time</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-full" onclick="addMember()">Adicionar Membro</button>
+                </div>
+                <div class="members-grid" id="membersList"></div>
+            </div>
+
+            <div id="payments" class="tab-content">
+                <div class="card">
+                    <h2 id="currentMonthTitle">📅 Janeiro 2025</h2>
+                    <div class="month-selector" id="monthSelector"></div>
+                    
+                    <h3>💳 Registrar Pagamentos</h3>
+                    <div class="payment-list" id="paymentCheckList"></div>
+                    <button class="btn btn-success btn-full" onclick="markSelectedPayments()">✅ Confirmar Pagamentos Selecionados</button>
+                </div>
+                
+                <div class="members-grid" id="paymentsList"></div>
+            </div>
+
+            <div id="financial" class="tab-content">
+                <div class="summary-cards" id="summaryCards"></div>
+                
+                <div class="card">
+                    <h3>💸 Nova Despesa</h3>
+                    <select id="expenseType" class="form-select" style="margin-bottom: 1rem;">
+                        <option value="Horário">Horário</option>
+                        <option value="Churrasco">Churrasco</option>
+                        <option value="Compra de material">Compra de material</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <input type="text" id="expenseDesc" class="form-input" placeholder="Descrição adicional (opcional)" style="margin-bottom: 1rem;">
+                    <input type="number" id="expenseAmount" class="form-input" step="0.01" placeholder="Valor (R$)" style="margin-bottom: 1rem;">
+                    <select id="expenseMonth" class="form-select" style="margin-bottom: 1rem;"></select>
+                    <button class="btn btn-danger btn-full" onclick="addExpense()">Adicionar Despesa</button>
+                </div>
+                
+                <div id="expensesList"></div>
+            </div>
+
+            <div id="whatsapp" class="tab-content">
+                <div class="card">
+                    <h2>📱 Relatório WhatsApp</h2>
+                    <select id="reportMonth" class="form-select" style="margin-bottom: 1rem;"></select>
+                    <button class="btn btn-success btn-full" onclick="generateReport()">🚀 Gerar Relatório Completo</button>
+                </div>
+
+                <div class="card" id="reportOutput" style="display: none;">
+                    <h3>📄 Relatório Gerado</h3>
+                    <textarea id="reportText" class="report-textarea" readonly></textarea>
+                    <div class="report-buttons">
+                        <button class="btn btn-secondary" onclick="copyReport()">📋 Copiar</button>
+                        <button class="btn btn-success" onclick="sendWhatsApp()">📱 WhatsApp</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== SORTEADOR DE TIMES ===================== -->
+            <div id="sorteador" class="tab-content">
+
+                <!-- SELECIONAR JOGADORES ATIVOS -->
+                <div class="card">
+                    <h2>⚽ Selecionar Jogadores</h2>
+                    <p style="color:#6b7280;font-size:0.9rem;margin-bottom:1rem;">
+                        Marque quem vai jogar hoje. Os membros ativos do mês atual são carregados automaticamente.
+                        Você também pode adicionar jogadores avulsos (convidados, etc).
+                    </p>
+
+                    <!-- Botões rápidos -->
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <button class="btn btn-primary" onclick="sortLoadMembers()">🔄 Carregar Membros Ativos</button>
+                        <button class="btn btn-secondary" onclick="sortSelectAll()">✅ Marcar Todos</button>
+                        <button class="btn btn-secondary" onclick="sortDeselectAll()">⬜ Desmarcar Todos</button>
+                    </div>
+
+                    <!-- Lista de membros carregados -->
+                    <div id="sortPlayerChecklist" style="display:grid;gap:0.5rem;margin-bottom:1.2rem;">
+                        <p style="color:#9ca3af;text-align:center;padding:1rem;">Clique em "Carregar Membros Ativos" para começar.</p>
+                    </div>
+
+                    <!-- Adicionar avulso -->
+                    <div style="border-top:1px solid #f1f5f9;padding-top:1rem;margin-top:0.5rem;">
+                        <p style="font-weight:600;font-size:0.9rem;margin-bottom:0.7rem;color:#374151;">➕ Adicionar Jogador Avulso</p>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+                            <input type="text" id="sortGuestName" class="form-input" placeholder="Nome do convidado..." maxlength="30" style="flex:1;min-width:160px;margin:0;">
+                            <div style="display:flex;align-items:center;gap:0.5rem;background:#f9fafb;border:2px solid #e5e7eb;border-radius:0.5rem;padding:0.5rem 0.8rem;">
+                                <span style="font-size:0.8rem;color:#6b7280;white-space:nowrap;">NOTA</span>
+                                <input type="number" id="sortGuestNota" min="1" max="10" step="0.5" value="5"
+                                    style="width:52px;border:none;background:none;font-size:1rem;font-weight:600;color:#3b82f6;text-align:center;outline:none;">
+                            </div>
+                            <button class="btn btn-success" onclick="sortAddGuest()">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIG + SORTEAR -->
+                <div class="card">
+                    <h2>⚙️ Configurar Sorteio</h2>
+                    <div class="form-grid" style="margin-bottom:1rem;">
+                        <div>
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:600;">Nº de Times</label>
+                            <input type="number" id="sortNumTeams" class="form-input" min="2" max="10" value="2">
+                        </div>
+                        <div>
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:600;">Jogadores por Time</label>
+                            <input type="number" id="sortPerTeam" class="form-input" min="1" max="20" value="5">
+                        </div>
+                    </div>
+
+                    <label style="display:flex;align-items:center;gap:0.8rem;cursor:pointer;padding:0.8rem;background:#f9fafb;border-radius:0.5rem;border:2px solid #e5e7eb;margin-bottom:1rem;">
+                        <input type="checkbox" id="sortBalance" checked style="width:20px;height:20px;cursor:pointer;">
+                        <div>
+                            <strong>Equilibrar times por nota</strong>
+                            <p style="font-size:0.8rem;color:#6b7280;margin:0;">Distribui em serpentina — times com força similar</p>
+                        </div>
+                    </label>
+
+                    <div id="sortWarn" style="display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:0.5rem;padding:0.8rem;color:#92400e;font-size:0.9rem;margin-bottom:1rem;"></div>
+
+                    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:0.5rem;padding:0.8rem;margin-bottom:1rem;font-size:0.9rem;color:#166534;">
+                        <span id="sortCounter">0 jogadores selecionados</span>
+                    </div>
+
+                    <button class="btn btn-success btn-full" onclick="sortear()" style="font-size:1.1rem;padding:1rem;">
+                        ⚡ Sortear Times
+                    </button>
+                </div>
+
+                <!-- RESULTADO -->
+                <div id="sortResult"></div>
+            </div>
+            <!-- ==================== FIM SORTEADOR ========================= -->
+
+            <div id="settings" class="tab-content">
+                <div class="card">
+                    <h2>⚙️ Configurações</h2>
+                    <button class="btn btn-primary btn-full" onclick="exportBackup()" style="margin-bottom: 0.8rem;">💾 Exportar Backup</button>
+                    <button class="btn btn-success btn-full" onclick="importBackup()" style="margin-bottom: 0.8rem;">📂 Importar Backup</button>
+                    <button class="btn btn-danger btn-full" onclick="clearAllData()">🗑️ Limpar Dados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeEditMember()">&times;</span>
+            <h2>✏️ Editar Membro</h2>
+            <input type="hidden" id="editMemberId">
+            <input type="text" id="editMemberName" class="form-input" placeholder="Nome" style="margin-bottom: 1rem;">
+            <input type="number" id="editMonthlyFee" class="form-input" step="0.01" placeholder="Mensalidade" style="margin-bottom: 1rem;">
+            <div class="form-grid" style="margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem;">Início:</label>
+                    <select id="editStartMonth" class="form-select"></select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem;">Saída:</label>
+                    <select id="editEndMonth" class="form-select">
+                        <option value="">Ainda no time</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="saveEditMember()">💾 Salvar Alterações</button>
+        </div>
+    </div>
+
+    <div id="editExpenseModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeEditExpense()">&times;</span>
+            <h2>✏️ Editar Despesa</h2>
+            <input type="hidden" id="editExpenseId">
+            <input type="hidden" id="editExpenseMonthKey">
+            <select id="editExpenseType" class="form-select" style="margin-bottom: 1rem;">
+                <option value="Horário">Horário</option>
+                <option value="Churrasco">Churrasco</option>
+                <option value="Compra de material">Compra de material</option>
+                <option value="Outro">Outro</option>
+            </select>
+            <input type="text" id="editExpenseDesc" class="form-input" placeholder="Descrição" style="margin-bottom: 1rem;">
+            <input type="number" id="editExpenseAmount" class="form-input" step="0.01" placeholder="Valor" style="margin-bottom: 1rem;">
+            <button class="btn btn-primary btn-full" onclick="saveEditExpense()">💾 Salvar Alterações</button>
+        </div>
+    </div>
+
+    <script>
+        let appData = {
+            members: [],
+            payments: {},
+            expenses: {},
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+
+        const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            populateMonthSelects();
+            generateMonthSelector();
+            updateUI();
+        });
+
+        function saveData() {
+            try {
+                localStorage.setItem('futebolManagerV2', JSON.stringify(appData));
+                window.appDataBackup = JSON.stringify(appData);
+            } catch (e) {
+                console.error('Erro ao salvar:', e);
+            }
+        }
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('futebolManagerV2');
+                if (saved) {
+                    appData = JSON.parse(saved);
+                } else if (window.appDataBackup) {
+                    appData = JSON.parse(window.appDataBackup);
+                }
+            } catch (e) {
+                console.error('Erro ao carregar:', e);
+            }
+        }
+
+        function populateMonthSelects() {
+            const selects = ['startMonth', 'endMonth', 'expenseMonth', 'reportMonth', 'editStartMonth', 'editEndMonth'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    const baseOptions = months.map((month, index) => 
+                        `<option value="${index}" ${index === appData.currentMonth ? 'selected' : ''}>${month}</option>`
+                    ).join('');
+                    
+                    if (selectId === 'endMonth' || selectId === 'editEndMonth') {
+                        select.innerHTML = '<option value="">Ainda no time</option>' + baseOptions;
+                    } else {
+                        select.innerHTML = baseOptions;
+                    }
+                }
+            });
+        }
+
+        function updateUI() {
+            updateMembersList();
+            updatePaymentCheckList();
+            updatePaymentsList();
+            updateFinancialSummary();
+            updateExpensesList();
+            updateCurrentMonthTitle();
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            if (tabName === 'sorteador') sortLoadMembers();
+        }
+
+        function addMember() {
+            const name = document.getElementById('memberName').value.trim();
+            const fee = parseFloat(document.getElementById('monthlyFee').value);
+            const startMonth = parseInt(document.getElementById('startMonth').value);
+            const endMonth = document.getElementById('endMonth').value;
+            
+            if (!name || !fee || fee <= 0) {
+                alert('Preencha nome e mensalidade válida!');
+                return;
+            }
+
+            const member = {
+                id: Date.now(),
+                name: name,
+                monthlyFee: fee,
+                startMonth: startMonth,
+                endMonth: endMonth === '' ? null : parseInt(endMonth),
+                active: endMonth === '' ? true : false
+            };
+
+            appData.members.push(member);
+            document.getElementById('memberName').value = '';
+            document.getElementById('monthlyFee').value = '';
+            document.getElementById('startMonth').selectedIndex = appData.currentMonth;
+            document.getElementById('endMonth').selectedIndex = 0;
+            
+            saveData();
+            updateUI();
+        }
+
+        function isMemberActiveInMonth(member, monthIndex) {
+            if (member.startMonth > monthIndex) return false;
+            if (member.endMonth !== null && member.endMonth < monthIndex) return false;
+            return true;
+        }
+
+        function openEditMember(memberId) {
+            const member = appData.members.find(m => m.id === memberId);
+            if (!member) return;
+
+            document.getElementById('editMemberId').value = member.id;
+            document.getElementById('editMemberName').value = member.name;
+            document.getElementById('editMonthlyFee').value = member.monthlyFee;
+            document.getElementById('editStartMonth').value = member.startMonth;
+            document.getElementById('editEndMonth').value = member.endMonth === null ? '' : member.endMonth;
+            
+            document.getElementById('editMemberModal').style.display = 'block';
+        }
+
+        function closeEditMember() {
+            document.getElementById('editMemberModal').style.display = 'none';
+        }
+
+        function saveEditMember() {
+            const id = parseInt(document.getElementById('editMemberId').value);
+            const member = appData.members.find(m => m.id === id);
+            
+            if (member) {
+                member.name = document.getElementById('editMemberName').value.trim();
+                member.monthlyFee = parseFloat(document.getElementById('editMonthlyFee').value);
+                member.startMonth = parseInt(document.getElementById('editStartMonth').value);
+                const endMonthVal = document.getElementById('editEndMonth').value;
+                member.endMonth = endMonthVal === '' ? null : parseInt(endMonthVal);
+                member.active = member.endMonth === null ? true : false;
+                
+                saveData();
+                updateUI();
+                closeEditMember();
+            }
+        }
+
+        function removeMember(memberId) {
+            if (!confirm('Remover este membro? Todos os pagamentos dele também serão removidos.')) return;
+            
+            const memberIdNum = parseInt(memberId);
+            appData.members = appData.members.filter(m => m.id !== memberIdNum);
+            
+            Object.keys(appData.payments).forEach(monthKey => {
+                if (appData.payments[monthKey][memberIdNum]) {
+                    delete appData.payments[monthKey][memberIdNum];
+                }
+            });
+            
+            saveData();
+            updateUI();
+            alert('Membro removido com sucesso!');
+        }
+
+        function updateMembersList() {
+            const container = document.getElementById('membersList');
+            if (appData.members.length === 0) {
+                container.innerHTML = '<div class="card"><div style="text-align:center;padding:2rem;color:#6b7280;"><h3>Nenhum membro</h3><p>Adicione o primeiro membro acima!</p></div></div>';
+                return;
+            }
+
+            container.innerHTML = appData.members.map(member => {
+                const periodText = `📅 ${months[member.startMonth]} ${member.endMonth !== null ? '→ ' + months[member.endMonth] : '→ Ativo'}`;
+                
+                return `<div class="member-card ${member.active ? 'active' : 'inactive'}">
+                    <div class="member-info">
+                        <h3>${member.name}</h3>
+                        <p><strong>R$ ${member.monthlyFee.toFixed(2)}</strong>/mês</p>
+                        <p style="font-size: 0.85rem;">${periodText}</p>
+                        <span class="status-badge ${member.active ? 'status-active' : 'status-inactive'}">${member.active ? '✅ Ativo' : '❌ Inativo'}</span>
+                        <div class="member-actions">
+                            <button class="btn btn-warning" onclick="openEditMember(${member.id})">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="removeMember(${member.id})">🗑️ Remover</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function generateMonthSelector() {
+            const container = document.getElementById('monthSelector');
+            container.innerHTML = months.map((month, index) => `<button class="month-btn ${index === appData.currentMonth ? 'active' : ''}" onclick="selectMonth(${index})">${month}</button>`).join('');
+        }
+
+        function selectMonth(monthIndex) {
+            appData.currentMonth = monthIndex;
+            generateMonthSelector();
+            updateCurrentMonthTitle();
+            updatePaymentCheckList();
+            updatePaymentsList();
+        }
+
+        function updateCurrentMonthTitle() {
+            document.getElementById('currentMonthTitle').textContent = `📅 ${months[appData.currentMonth]} ${appData.currentYear}`;
+        }
+
+        function updatePaymentCheckList() {
+            const container = document.getElementById('paymentCheckList');
+            const monthKey = `${appData.currentYear}-${appData.currentMonth}`;
+            const monthPayments = appData.payments[monthKey] || {};
+            
+            const activeMembers = appData.members.filter(m => isMemberActiveInMonth(m, appData.currentMonth));
+            
+            if (activeMembers.length === 0) {
+                container.innerHTML = '<p style="color:#6b7280;text-align:center;">Nenhum membro ativo neste mês</p>';
+                return;
+            }
+
+            container.innerHTML = activeMembers.map(member => `
+                <div class="payment-item">
+                    <input type="checkbox" id="pay_${member.id}" ${monthPayments[member.id] ? 'checked' : ''}>
+                    <label for="pay_${member.id}" style="flex:1;cursor:pointer;">
+                        <strong>${member.name}</strong> - R$ ${member.monthlyFee.toFixed(2)}
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        function markSelectedPayments() {
+            const monthKey = `${appData.currentYear}-${appData.currentMonth}`;
+            if (!appData.payments[monthKey]) {
+                appData.payments[monthKey] = {};
+            }
+            
+            const activeMembers = appData.members.filter(m => isMemberActiveInMonth(m, appData.currentMonth));
+            
+            activeMembers.forEach(member => {
+                const checkbox = document.getElementById(`pay_${member.id}`);
+                if (checkbox && checkbox.checked) {
+                    appData.payments[monthKey][member.id] = true;
+                } else if (appData.payments[monthKey][member.id]) {
+                    delete appData.payments[monthKey][member.id];
+                }
+            });
+            
+            saveData();
+            updateUI();
+            alert('Pagamentos atualizados!');
+        }
+
+        function updatePaymentsList() {
+            const container = document.getElementById('paymentsList');
+            const monthKey = `${appData.currentYear}-${appData.currentMonth}`;
+            const monthPayments = appData.payments[monthKey] || {};
+            
+            const activeMembers = appData.members.filter(m => isMemberActiveInMonth(m, appData.currentMonth));
+            
+            if (activeMembers.length === 0) {
+                container.innerHTML = '<div class="card"><p style="color:#6b7280;text-align:center;">Nenhum membro ativo neste mês</p></div>';
+                return;
+            }
+
+            container.innerHTML = activeMembers.map(member => {
+                const paid = monthPayments[member.id] || false;
+                return `<div class="member-card ${paid ? 'active' : 'inactive'}">
+                    <div class="member-info">
+                        <h3>${member.name}</h3>
+                        <p><strong>R$ ${member.monthlyFee.toFixed(2)}</strong></p>
+                        <span class="status-badge ${paid ? 'status-active' : 'status-inactive'}">${paid ? '✅ Pago' : '⏳ Pendente'}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function updateFinancialSummary() {
+            const container = document.getElementById('summaryCards');
+            
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            Object.keys(appData.payments).forEach(monthKey => {
+                const monthPayments = appData.payments[monthKey];
+                
+                Object.keys(monthPayments).forEach(memberId => {
+                    if (monthPayments[memberId]) {
+                        const member = appData.members.find(m => m.id == memberId);
+                        if (member) {
+                            totalIncome += member.monthlyFee;
+                        }
+                    }
+                });
+            });
+            
+            Object.keys(appData.expenses).forEach(monthKey => {
+                const monthExpenses = appData.expenses[monthKey];
+                monthExpenses.forEach(expense => {
+                    totalExpense += expense.amount;
+                });
+            });
+            
+            const balance = totalIncome - totalExpense;
+            
+            container.innerHTML = `
+                <div class="summary-card summary-income">
+                    <h3>R$ ${totalIncome.toFixed(2)}</h3>
+                    <p>💰 Total Recebido</p>
+                </div>
+                <div class="summary-card summary-expense">
+                    <h3>R$ ${totalExpense.toFixed(2)}</h3>
+                    <p>💸 Total Despesas</p>
+                </div>
+                <div class="summary-card summary-balance">
+                    <h3>R$ ${balance.toFixed(2)}</h3>
+                    <p>💼 Saldo em Caixa</p>
+                </div>
+            `;
+        }
+
+        function addExpense() {
+            const type = document.getElementById('expenseType').value;
+            const desc = document.getElementById('expenseDesc').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const month = parseInt(document.getElementById('expenseMonth').value);
+            
+            if (!amount || amount <= 0) {
+                alert('Insira um valor válido!');
+                return;
+            }
+            
+            const description = desc ? `${type} - ${desc}` : type;
+            
+            const monthKey = `${appData.currentYear}-${month}`;
+            if (!appData.expenses[monthKey]) {
+                appData.expenses[monthKey] = [];
+            }
+            
+            appData.expenses[monthKey].push({
+                id: Date.now(),
+                type: type,
+                description: description,
+                amount: amount,
+                date: new Date().toISOString()
+            });
+            
+            document.getElementById('expenseType').selectedIndex = 0;
+            document.getElementById('expenseDesc').value = '';
+            document.getElementById('expenseAmount').value = '';
+            
+            saveData();
+            updateUI();
+        }
+
+        function openEditExpense(monthKey, expenseId) {
+            const expenses = appData.expenses[monthKey];
+            const expense = expenses.find(e => e.id === expenseId);
+            if (!expense) return;
+
+            document.getElementById('editExpenseId').value = expense.id;
+            document.getElementById('editExpenseMonthKey').value = monthKey;
+            document.getElementById('editExpenseType').value = expense.type;
+            
+            const descParts = expense.description.split(' - ');
+            document.getElementById('editExpenseDesc').value = descParts.length > 1 ? descParts.slice(1).join(' - ') : '';
+            
+            document.getElementById('editExpenseAmount').value = expense.amount;
+            
+            document.getElementById('editExpenseModal').style.display = 'block';
+        }
+
+        function closeEditExpense() {
+            document.getElementById('editExpenseModal').style.display = 'none';
+        }
+
+        function saveEditExpense() {
+            const id = parseInt(document.getElementById('editExpenseId').value);
+            const monthKey = document.getElementById('editExpenseMonthKey').value;
+            const expenses = appData.expenses[monthKey];
+            const expense = expenses.find(e => e.id === id);
+            
+            if (expense) {
+                expense.type = document.getElementById('editExpenseType').value;
+                const desc = document.getElementById('editExpenseDesc').value.trim();
+                expense.description = desc ? `${expense.type} - ${desc}` : expense.type;
+                expense.amount = parseFloat(document.getElementById('editExpenseAmount').value);
+                
+                saveData();
+                updateUI();
+                closeEditExpense();
+            }
+        }
+
+        function removeExpense(monthKey, expenseId) {
+            if (!confirm('Remover esta despesa?')) return;
+            
+            const expenseIdNum = parseInt(expenseId);
+            appData.expenses[monthKey] = appData.expenses[monthKey].filter(e => e.id !== expenseIdNum);
+            
+            if (appData.expenses[monthKey].length === 0) {
+                delete appData.expenses[monthKey];
+            }
+            
+            saveData();
+            updateUI();
+            alert('Despesa removida com sucesso!');
+        }
+
+        function updateExpensesList() {
+            const container = document.getElementById('expensesList');
+            
+            const allExpenses = [];
+            Object.keys(appData.expenses).forEach(monthKey => {
+                const [year, month] = monthKey.split('-').map(Number);
+                appData.expenses[monthKey].forEach(expense => {
+                    allExpenses.push({
+                        ...expense,
+                        monthKey: monthKey,
+                        month: month,
+                        year: year
+                    });
+                });
+            });
+            
+            if (allExpenses.length === 0) {
+                container.innerHTML = '<div class="card"><p style="color:#6b7280;text-align:center;">Nenhuma despesa registrada</p></div>';
+                return;
+            }
+            
+            allExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            container.innerHTML = '<div class="card"><h3>📋 Despesas Registradas</h3>' + 
+                allExpenses.map(expense => `
+                    <div class="expense-item">
+                        <div>
+                            <strong>${expense.description}</strong>
+                            <p style="font-size:0.85rem;color:#6b7280;margin-top:0.3rem;">${months[expense.month]} ${expense.year}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <strong style="color:#ef4444;font-size:1.1rem;">R$ ${expense.amount.toFixed(2)}</strong>
+                            <div style="margin-top:0.5rem;">
+                                <button class="btn btn-warning" style="padding:0.4rem 0.8rem;font-size:0.75rem;margin-right:0.3rem;" onclick="openEditExpense('${expense.monthKey}', ${expense.id})">✏️</button>
+                                <button class="btn btn-danger" style="padding:0.4rem 0.8rem;font-size:0.75rem;" onclick="removeExpense('${expense.monthKey}', ${expense.id})">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') + '</div>';
+        }
+
+        function generateReport() {
+            const reportMonth = parseInt(document.getElementById('reportMonth').value);
+            const monthKey = `${appData.currentYear}-${reportMonth}`;
+            const monthPayments = appData.payments[monthKey] || {};
+            const monthExpenses = appData.expenses[monthKey] || [];
+            
+            const activeMembers = appData.members.filter(m => isMemberActiveInMonth(m, reportMonth));
+            
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            Object.keys(appData.payments).forEach(key => {
+                const payments = appData.payments[key];
+                Object.keys(payments).forEach(memberId => {
+                    if (payments[memberId]) {
+                        const member = appData.members.find(m => m.id == memberId);
+                        if (member) {
+                            totalIncome += member.monthlyFee;
+                        }
+                    }
+                });
+            });
+            
+            Object.keys(appData.expenses).forEach(key => {
+                const expenses = appData.expenses[key];
+                expenses.forEach(expense => {
+                    totalExpense += expense.amount;
+                });
+            });
+            
+            const balance = totalIncome - totalExpense;
+            
+            const pendingMembers = activeMembers.filter(m => !monthPayments[m.id]);
+            
+            let monthIncome = 0;
+            activeMembers.forEach(member => {
+                if (monthPayments[member.id]) {
+                    monthIncome += member.monthlyFee;
+                }
+            });
+            
+            let monthExpenseTotal = 0;
+            monthExpenses.forEach(exp => monthExpenseTotal += exp.amount);
+            
+            let report = `⚽ *RELAÇÃO DO HORÁRIO - ${months[reportMonth].toUpperCase()} ${appData.currentYear}*\n\n`;
+            
+            report += `💼 *SALDO EM CAIXA*\n`;
+            report += `R$ ${balance.toFixed(2)}\n\n`;
+            
+            if (pendingMembers.length > 0) {
+                report += `⏳ *PENDÊNCIA NO HORÁRIO (${pendingMembers.length})*\n`;
+                pendingMembers.forEach(member => {
+                    report += `• ${member.name} - R$ ${member.monthlyFee.toFixed(2)}\n`;
+                });
+                report += `\n`;
+            } else {
+                report += `✅ *TODOS PAGOS NESTE MÊS!*\n\n`;
+            }
+            
+            if (monthExpenses.length > 0) {
+                report += `💸 *DESPESAS DO MÊS*\n`;
+                monthExpenses.forEach(expense => {
+                    report += `• ${expense.description} - R$ ${expense.amount.toFixed(2)}\n`;
+                });
+                report += `Total: R$ ${monthExpenseTotal.toFixed(2)}\n\n`;
+            }
+            
+            report += `📱 *PIX PARA PAGAMENTO*\n`;
+            report += `54999756568\n\n`;
+            
+            report += `📊 *RESUMO DO MÊS*\n`;
+            report += `Recebido: R$ ${monthIncome.toFixed(2)}\n`;
+            report += `Despesas: R$ ${monthExpenseTotal.toFixed(2)}\n`;
+            
+            document.getElementById('reportText').value = report;
+            document.getElementById('reportOutput').style.display = 'block';
+        }
+
+        function copyReport() {
+            const reportText = document.getElementById('reportText');
+            reportText.select();
+            document.execCommand('copy');
+            alert('Relatório copiado!');
+        }
+
+        function sendWhatsApp() {
+            const report = document.getElementById('reportText').value;
+            const encoded = encodeURIComponent(report);
+            window.open(`https://wa.me/?text=${encoded}`, '_blank');
+        }
+
+        function exportBackup() {
+            const dataStr = JSON.stringify(appData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `futebol-backup-${new Date().toISOString().slice(0,10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        appData = JSON.parse(event.target.result);
+                        saveData();
+                        updateUI();
+                        alert('Backup importado com sucesso!');
+                    } catch (error) {
+                        alert('Erro ao importar backup!');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        /* ===================== SORTEADOR DE TIMES ===================== */
+
+        // Lista de jogadores para o sorteio: { id, name, nota, isGuest }
+        let sortPlayers = [];
+
+        // Carregar membros ativos do mês corrente
+        function sortLoadMembers() {
+            const activeMembers = appData.members.filter(m => isMemberActiveInMonth(m, appData.currentMonth));
+            // Preserva notas já definidas; adiciona novos; remove os que saíram (mas mantém avulsos)
+            const guestPlayers = sortPlayers.filter(p => p.isGuest);
+            const memberPlayers = activeMembers.map(m => {
+                const existing = sortPlayers.find(p => p.id === m.id);
+                return {
+                    id: m.id,
+                    name: m.name,
+                    nota: existing ? existing.nota : 5,
+                    checked: existing ? existing.checked : true,
+                    isGuest: false
+                };
+            });
+            sortPlayers = [...memberPlayers, ...guestPlayers];
+            sortRenderChecklist();
+        }
+
+        function sortAddGuest() {
+            const nameEl = document.getElementById('sortGuestName');
+            const notaEl = document.getElementById('sortGuestNota');
+            const name = nameEl.value.trim();
+            let nota = parseFloat(notaEl.value);
+            if (!name) { nameEl.focus(); return; }
+            nota = Math.min(10, Math.max(1, isNaN(nota) ? 5 : Math.round(nota * 2) / 2));
+            sortPlayers.push({ id: 'g_' + Date.now(), name, nota, checked: true, isGuest: true });
+            nameEl.value = '';
+            nameEl.focus();
+            sortRenderChecklist();
+        }
+
+        function sortSelectAll()   { sortPlayers.forEach(p => p.checked = true);  sortRenderChecklist(); }
+        function sortDeselectAll() { sortPlayers.forEach(p => p.checked = false); sortRenderChecklist(); }
+
+        function sortToggle(id) {
+            const p = sortPlayers.find(p => String(p.id) === String(id));
+            if (p) { p.checked = !p.checked; sortRenderChecklist(); }
+        }
+
+        function sortSetNota(id, val) {
+            const p = sortPlayers.find(p => String(p.id) === String(id));
+            if (p) {
+                let n = parseFloat(val);
+                n = Math.min(10, Math.max(1, isNaN(n) ? 5 : Math.round(n * 2) / 2));
+                p.nota = n;
+            }
+        }
+
+        function sortRemoveGuest(id) {
+            sortPlayers = sortPlayers.filter(p => String(p.id) !== String(id));
+            sortRenderChecklist();
+        }
+
+        function sortRenderChecklist() {
+            const container = document.getElementById('sortPlayerChecklist');
+            const selected = sortPlayers.filter(p => p.checked).length;
+            document.getElementById('sortCounter').textContent =
+                `${selected} jogador${selected !== 1 ? 'es' : ''} selecionado${selected !== 1 ? 's' : ''}`;
+
+            if (!sortPlayers.length) {
+                container.innerHTML = '<p style="color:#9ca3af;text-align:center;padding:1rem;">Nenhum jogador carregado.</p>';
+                return;
+            }
+
+            const sorted = [...sortPlayers].sort((a,b) => {
+                if (a.isGuest !== b.isGuest) return a.isGuest ? 1 : -1;
+                return a.name.localeCompare(b.name);
+            });
+
+            container.innerHTML = sorted.map(p => {
+                const notaColor = p.nota >= 8 ? '#dc2626' : p.nota >= 6 ? '#d97706' : p.nota >= 4 ? '#059669' : '#6b7280';
+                return `<div class="payment-item" style="border:2px solid ${p.checked ? '#10b981' : '#e5e7eb'};background:${p.checked ? '#f0fdf4' : '#f9fafb'};transition:all 0.2s;">
+                    <input type="checkbox" ${p.checked ? 'checked' : ''} onchange="sortToggle('${p.id}')"
+                        style="width:20px;height:20px;cursor:pointer;flex-shrink:0;">
+                    <label style="flex:1;cursor:pointer;font-weight:500;" onclick="sortToggle('${p.id}')">
+                        ${p.name}
+                        ${p.isGuest ? '<span style="font-size:0.75rem;color:#6b7280;margin-left:4px;">(avulso)</span>' : ''}
+                    </label>
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                        <span style="font-size:0.75rem;color:#6b7280;">Nota</span>
+                        <input type="number" value="${p.nota}" min="1" max="10" step="0.5"
+                            onchange="sortSetNota('${p.id}', this.value)"
+                            style="width:52px;padding:4px 6px;border:2px solid #e5e7eb;border-radius:6px;font-size:0.9rem;font-weight:700;color:${notaColor};text-align:center;outline:none;">
+                    </div>
+                    ${p.isGuest ? `<button onclick="sortRemoveGuest('${p.id}')"
+                        style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:1.2rem;padding:0 4px;flex-shrink:0;"
+                        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#9ca3af'">×</button>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function shuffleArr(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        const SORT_COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#f97316','#ec4899','#14b8a6'];
+
+        function sortear() {
+            const numTeams = parseInt(document.getElementById('sortNumTeams').value) || 2;
+            const perTeam  = parseInt(document.getElementById('sortPerTeam').value) || 5;
+            const balance  = document.getElementById('sortBalance').checked;
+            const warn     = document.getElementById('sortWarn');
+
+            const selected = sortPlayers.filter(p => p.checked);
+
+            if (selected.length < 2) {
+                warn.textContent = 'Selecione pelo menos 2 jogadores para sortear.';
+                warn.style.display = 'block'; return;
+            }
+            warn.style.display = 'none';
+
+            const needed = numTeams * perTeam;
+            let teams, extras;
+
+            if (balance) {
+                // Serpentina por nota (shuffle dentro do mesmo nível)
+                const byNota = {};
+                selected.forEach(p => { (byNota[p.nota] = byNota[p.nota] || []).push(p); });
+                Object.values(byNota).forEach(g => { const sh = shuffleArr(g); g.splice(0, g.length, ...sh); });
+                const pool = [...selected].sort((a,b) => b.nota - a.nota);
+                extras = pool.slice(needed);
+                const inGame = pool.slice(0, needed);
+                teams = Array.from({length: numTeams}, () => []);
+                inGame.forEach((p, i) => {
+                    const round = Math.floor(i / numTeams);
+                    const pos = round % 2 === 0 ? i % numTeams : numTeams - 1 - (i % numTeams);
+                    teams[pos].push(p);
+                });
+            } else {
+                const sh = shuffleArr(selected);
+                teams = Array.from({length: numTeams}, (_, t) => sh.slice(t * perTeam, t * perTeam + perTeam));
+                extras = sh.slice(needed);
+            }
+
+            sortRenderResult(teams, extras);
+        }
+
+        function sortAvg(team) {
+            if (!team.length) return null;
+            return (team.reduce((s, p) => s + p.nota, 0) / team.length).toFixed(1);
+        }
+
+        function sortRenderResult(teams, extras) {
+            const resultEl = document.getElementById('sortResult');
+
+            let html = `<div class="card">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <h2 style="margin:0;">🏆 Times Sorteados</h2>
+                    <button class="btn btn-secondary" style="padding:0.5rem 1rem;font-size:0.8rem;" onclick="sortear()">↺ Ressortear</button>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">`;
+
+            teams.forEach((team, i) => {
+                const color = SORT_COLORS[i % SORT_COLORS.length];
+                const avg   = sortAvg(team);
+                html += `<div style="border:2px solid ${color}20;border-top:4px solid ${color};border-radius:0.8rem;overflow:hidden;">
+                    <div style="background:${color}12;padding:0.8rem 1rem;display:flex;align-items:center;justify-content:space-between;">
+                        <strong style="color:${color};font-size:1rem;">Time ${i+1}</strong>
+                        ${avg ? `<span style="background:white;border:1px solid ${color}40;border-radius:99px;padding:2px 10px;font-size:0.8rem;font-weight:600;color:${color};">Ø ${avg}</span>` : ''}
+                    </div>
+                    <div style="padding:0.8rem;">
+                        ${team.length ? team.map(p => `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                                <span style="font-size:0.9rem;font-weight:500;">${p.name}</span>
+                                <span style="font-size:0.8rem;font-weight:700;color:${p.nota>=8?'#dc2626':p.nota>=6?'#d97706':'#059669'};background:${p.nota>=8?'#fef2f2':p.nota>=6?'#fffbeb':'#f0fdf4'};padding:2px 8px;border-radius:6px;">${p.nota}</span>
+                            </div>`).join('') : '<p style="color:#9ca3af;font-size:0.85rem;">—</p>'}
+                    </div>
+                </div>`;
+            });
+
+            html += `</div>`;
+
+            if (extras.length) {
+                html += `<div style="margin-top:1rem;padding:1rem;background:#f9fafb;border-radius:0.8rem;border:2px solid #e5e7eb;">
+                    <p style="font-size:0.8rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.7rem;">⏳ Reservas / Aguardando</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                        ${extras.map(p => `<span style="background:white;border:1px solid #e5e7eb;border-radius:99px;padding:4px 12px;font-size:0.85rem;">${p.name} · <strong>${p.nota}</strong></span>`).join('')}
+                    </div>
+                </div>`;
+            }
+
+            // Botão compartilhar WhatsApp
+            window._lastSortTeams = teams;
+            html += `<button class="btn btn-success btn-full" style="margin-top:1rem;" onclick="sortShareWhatsApp()">
+                📱 Compartilhar no WhatsApp
+            </button>`;
+
+            html += `</div>`;
+            resultEl.innerHTML = html;
+            resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function sortShareWhatsApp() {
+            const teams = window._lastSortTeams || [];
+            let msg = '⚽ *TIMES SORTEADOS*\n\n';
+            teams.forEach((team, i) => {
+                const avg = team.length ? (team.reduce((s,p)=>s+p.nota,0)/team.length).toFixed(1) : '—';
+                msg += `*Time ${i+1}* (Ø ${avg})\n`;
+                team.forEach(p => { msg += `• ${p.name}\n`; });
+                msg += '\n';
+            });
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        /* ==================== FIM SORTEADOR ========================= */
+
+        function clearAllData() {
+            if (!confirm('ATENÇÃO: Isso removerá TODOS os dados permanentemente. Deseja continuar?')) return;
+            if (!confirm('Tem certeza absoluta? Esta ação não pode ser desfeita!')) return;
+            
+            appData = {
+                members: [],
+                payments: {},
+                expenses: {},
+                currentMonth: new Date().getMonth(),
+                currentYear: new Date().getFullYear()
+            };
+            
+            saveData();
+            updateUI();
+            alert('Todos os dados foram removidos!');
+        }
+    </script>
+</body>
+</html>
